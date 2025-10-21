@@ -9,3 +9,13 @@ GET {{EasyMail_HostAddress}}/api/client
 Accept: application/json
 
 ###
+
+POST {{EasyMail_HostAddress}}/api/client
+Content-Type: application/json
+{
+  "name": "Josefino",
+  "email": "josefino@example.com",
+  "isActive": true
+}
+
+###
