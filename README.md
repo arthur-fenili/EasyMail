@@ -113,12 +113,12 @@ dotnet restore
 dotnet run --project EasyMail/EasyMail.csproj
 ```
 
-A API estará disponível em: `https://localhost:7001` ou `http://localhost:5001`
+A API estará disponível em: `https://localhost:7014` ou `http://localhost:5023`
 
 ## 📚 Documentação da API
 
 ### Swagger UI
-Acesse `https://localhost:7001/swagger` para a documentação interativa.
+Acesse `https://localhost:7014/swagger` para a documentação interativa.
 
 ### Endpoints Principais
 
@@ -194,7 +194,7 @@ docker start mongodb-easymail
 
 ### Criar um cliente
 ```bash
-curl -X POST "https://localhost:7001/api/client" \
+curl -X POST "https://localhost:7014/api/client" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Maria Santos",
@@ -205,7 +205,7 @@ curl -X POST "https://localhost:7001/api/client" \
 
 ### Enviar um e-mail
 ```bash
-curl -X POST "https://localhost:7001/api/email/send" \
+curl -X POST "https://localhost:7014/api/email/send" \
   -H "Content-Type: application/json" \
   -d '{
     "to": "maria@empresa.com",
