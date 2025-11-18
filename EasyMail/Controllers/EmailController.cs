@@ -40,5 +40,26 @@ namespace EasyMail.Controllers
             }
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> EmailAllClientsAsync([FromBody] EmailAllClientsRequest request)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _logger.LogInformation("Received email to all clients from database request with subject: {Subject}", request.Subject);
+
+                return Ok(await _emailService.EmailAllClientsAsync(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }

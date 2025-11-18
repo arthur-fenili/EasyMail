@@ -1,6 +1,8 @@
 ﻿using Application.DTOs.Requests;
 using Application.DTOs.Responses;
 using Application.Services.Interfaces;
+using Domain.Entities;
+using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
 
@@ -9,11 +11,13 @@ namespace Application.Services;
 public class EmailService : IEmailService
 {
     private readonly IEmailProvider _emailProvider;
+    private readonly IClientRepository _clientRepository;
     private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IEmailProvider emailProvider, ILogger<EmailService> logger)
+    public EmailService(IEmailProvider emailProvider, IClientRepository clientRepository, ILogger<EmailService> logger)
     {
         _emailProvider = emailProvider;
+        _clientRepository = clientRepository;
         _logger = logger;
     }
 
@@ -43,5 +47,31 @@ public class EmailService : IEmailService
                 SentAt = DateTime.UtcNow
             };
         }
+    }
+
+    public async Task<EmailResponse> EmailAllClientsAsync(EmailAllClientsRequest request)
+    {
+        var clients = await _clientRepository.GetClientsAsync();
+
+        if (clients != null)
+        {
+            foreach (Client client in clients)
+            {
+                await _emailProvider.SendAsync(client.Email, request.Subject, request.Body, request.IsHtml);
+            }
+
+            return new EmailResponse
+            {
+                Success = true,
+                Message = "Email sent successfully to all clients in database.",
+                SentAt = DateTime.UtcNow
+            };
+        }
+
+        return new EmailResponse
+        {
+            Success = false,
+            Message = "No clients found in database.",
+        };
     }
 }

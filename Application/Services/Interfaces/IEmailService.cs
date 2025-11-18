@@ -6,4 +6,5 @@ namespace Application.Services.Interfaces;
 public interface IEmailService
 {
     Task<EmailResponse> SendEmailAsync(SendEmailRequest request);
+    Task<EmailResponse> EmailAllClientsAsync(EmailAllClientsRequest request);
 }
