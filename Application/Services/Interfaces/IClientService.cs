@@ -7,5 +7,6 @@ namespace Application.Services.Interfaces
     {
         Task<IEnumerable<ClientResponse>> GetAllClients();
         Task<ClientResponse> CreateClient(CreateClientRequest request);
+        Task<ClientResponse> UpdateClientAsync(string id, UpdateClientRequest request);
     }
 }

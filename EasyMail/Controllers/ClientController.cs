@@ -28,14 +28,14 @@ namespace EasyMail.Controllers
                 }
 
                 var createdClient = await _clientService.CreateClient(request);
-                _logger.LogInformation("Cliente inserido com sucesso: {@createdClient}", createdClient);
+                _logger.LogInformation("Client created successfully: {@CreatedClient}", createdClient);
                 
                 return Ok(createdClient);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao criar cliente");
-                return BadRequest("Erro ao criar cliente");
+                _logger.LogError(ex, "Failed to insert new client");
+                return BadRequest("Failed to insert new client");
             }
         }
 
@@ -45,6 +45,32 @@ namespace EasyMail.Controllers
             _logger.LogInformation("Received get all clients request.");
             var clients = await _clientService.GetAllClients();
             return Ok(clients);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateClientAsync(string id, [FromBody] UpdateClientRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var updatedClient = await _clientService.UpdateClientAsync(id, request);
+                _logger.LogInformation("Client updated successfully: {@UpdatedClient}", updatedClient);
+
+                return Ok(updatedClient);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update client");
+                return BadRequest("Failed to update client");
+            }
         }
     }
 }

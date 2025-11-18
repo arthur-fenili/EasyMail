@@ -22,7 +22,18 @@ public class ClientRepository : IClientRepository
 
     public async Task<IEnumerable<Client>> GetClientsAsync()
     {
-        return await _clients.Find(c => true).ToListAsync();
+        return await _clients.Find(c => true && c.IsActive == true).ToListAsync();
+    }
+
+    public async Task<Client?> GetClientByIdAsync(string id)
+    {
+        return await _clients.Find(c => c.Id.ToString() == id && c.IsActive == true).FirstOrDefaultAsync();
+    }
+
+    public async Task<Client> UpdateClientAsync(Client client)
+    {
+        await _clients.ReplaceOneAsync(c => c.Id == client.Id && c.IsActive == true, client);
+        return client;
     }
 }
 

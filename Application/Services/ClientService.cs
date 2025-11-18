@@ -2,9 +2,11 @@
 using Application.DTOs.Responses;
 using Application.Mappers;
 using Application.Services.Interfaces;
+using Domain.Entities;
 using Domain.Interfaces;
 
 namespace Application.Services;
+
 public class ClientService : IClientService
 {
     private readonly IClientRepository _clientRepository;
@@ -27,5 +29,17 @@ public class ClientService : IClientService
     {
         var clients = await _clientRepository.GetClientsAsync();
         return ClientMapper.ToResponseList(clients);
+    }
+
+    public async Task<ClientResponse> UpdateClientAsync(string id, UpdateClientRequest request)
+    {
+        var existingClient = await _clientRepository.GetClientByIdAsync(id) ?? throw new ArgumentException($"Client with ID {id} was not found", nameof(id));
+
+        existingClient.Name = request.Name;
+        existingClient.Email = request.Email;
+        existingClient.IsActive = request.IsActive;
+
+        var updatedClient = await _clientRepository.UpdateClientAsync(existingClient);
+        return ClientMapper.ToResponse(updatedClient);
     }
 }
