@@ -6,16 +6,10 @@ namespace EasyMail.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ClientController : ControllerBase
+    public class ClientController(ILogger<ClientController> logger, IClientService clientService) : ControllerBase
     {
-        private readonly ILogger<ClientController> _logger;
-        private readonly IClientService _clientService;
-
-        public ClientController(ILogger<ClientController> logger, IClientService clientService)
-        {
-            _clientService = clientService;
-            _logger = logger;
-        }
+        private readonly ILogger<ClientController> _logger = logger;
+        private readonly IClientService _clientService = clientService;
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateClientRequest request)

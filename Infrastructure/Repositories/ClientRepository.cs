@@ -5,14 +5,9 @@ using MongoDB.Driver;
 
 namespace Infrastructure.Repositories;
 
-public class ClientRepository : IClientRepository
+public class ClientRepository(MongoDbContext context) : IClientRepository
 {
-    private readonly IMongoCollection<Client> _clients;
-
-    public ClientRepository(MongoDbContext context)
-    {
-        _clients = context.Clients;
-    }
+    private readonly IMongoCollection<Client> _clients = context.Clients;
 
     public async Task<Client> CreateClient(Client client)
     {

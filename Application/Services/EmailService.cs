@@ -8,18 +8,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class EmailService : IEmailService
+public class EmailService(IEmailProvider emailProvider, IClientRepository clientRepository, ILogger<EmailService> logger) : IEmailService
 {
-    private readonly IEmailProvider _emailProvider;
-    private readonly IClientRepository _clientRepository;
-    private readonly ILogger<EmailService> _logger;
-
-    public EmailService(IEmailProvider emailProvider, IClientRepository clientRepository, ILogger<EmailService> logger)
-    {
-        _emailProvider = emailProvider;
-        _clientRepository = clientRepository;
-        _logger = logger;
-    }
+    private readonly IEmailProvider _emailProvider = emailProvider;
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly ILogger<EmailService> _logger = logger;
 
     public async Task<EmailResponse> SendEmailAsync(SendEmailRequest request)
     {

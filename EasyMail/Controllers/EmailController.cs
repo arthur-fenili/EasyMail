@@ -6,16 +6,10 @@ namespace EasyMail.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmailController : ControllerBase
+    public class EmailController(ILogger<EmailController> logger, IEmailService emailService) : ControllerBase
     {
-        private readonly ILogger<EmailController> _logger;
-        private readonly IEmailService _emailService;
-
-        public EmailController(ILogger<EmailController> logger, IEmailService emailService)
-        {
-            _emailService = emailService;
-            _logger = logger;
-        }
+        private readonly ILogger<EmailController> _logger = logger;
+        private readonly IEmailService _emailService = emailService;
 
         [HttpPost("send")]
         public async Task<IActionResult> SendEmailAsync([FromBody] SendEmailRequest request)
