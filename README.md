@@ -141,9 +141,31 @@ Content-Type: application/json
 }
 ```
 
+**PUT** `/api/client/{id}` - Atualizar cliente existente
+```http
+PUT /api/client/67123abc456def789012345
+Content-Type: application/json
+
+{
+  "name": "João Santos Silva",
+  "email": "joao.santos@email.com",
+  "isActive": false
+}
+```
+
+**Resposta de sucesso (Cliente):**
+```json
+{
+  "id": "67123abc456def789012345",
+  "name": "João Santos Silva",
+  "email": "joao.santos@email.com",
+  "isActive": false
+}
+```
+
 #### 📧 E-mails
 
-**POST** `/api/email/send` - Enviar e-mail
+**POST** `/api/email/send` - Enviar e-mail individual
 ```http
 POST /api/email/send
 Content-Type: application/json
@@ -151,8 +173,20 @@ Content-Type: application/json
 {
   "to": "destinatario@email.com",
   "subject": "Assunto do E-mail",
-  "body": "Corpo do e-mail",
-  "isHtml": false
+  "body": "Corpo do e-mail com <strong>HTML</strong>",
+  "isHtml": true
+}
+```
+
+**POST** `/api/email/send-all` - Enviar e-mail para todos os clientes
+```http
+POST /api/email/send-all
+Content-Type: application/json
+
+{
+  "subject": "Newsletter Mensal",
+  "body": "<h1>Novidades!</h1><p>Confira nossas novidades este mês...</p>",
+  "isHtml": true
 }
 ```
 
@@ -161,6 +195,15 @@ Content-Type: application/json
 {
   "success": true,
   "message": "Email sent successfully.",
+  "sentAt": "2024-11-18T01:30:00.000Z"
+}
+```
+
+**Resposta de erro (Email):**
+```json
+{
+  "success": false,
+  "message": "Failed to send email: SMTP server authentication failed",
   "sentAt": "2024-11-18T01:30:00.000Z"
 }
 ```
@@ -192,7 +235,9 @@ docker start mongodb-easymail
 
 ## 🧪 Exemplos de Uso
 
-### Criar um cliente
+### Gerenciamento de Clientes
+
+#### Criar um cliente
 ```bash
 curl -X POST "https://localhost:7014/api/client" \
   -H "Content-Type: application/json" \
@@ -203,7 +248,25 @@ curl -X POST "https://localhost:7014/api/client" \
   }'
 ```
 
-### Enviar um e-mail
+#### Atualizar um cliente
+```bash
+curl -X PUT "https://localhost:7014/api/client/67123abc456def789012345" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Maria Santos Silva",
+    "email": "maria.silva@empresa.com",
+    "isActive": false
+  }'
+```
+
+#### Listar todos os clientes
+```bash
+curl -X GET "https://localhost:7014/api/client"
+```
+
+### Envio de E-mails
+
+#### Enviar e-mail individual
 ```bash
 curl -X POST "https://localhost:7014/api/email/send" \
   -H "Content-Type: application/json" \
@@ -215,6 +278,17 @@ curl -X POST "https://localhost:7014/api/email/send" \
   }'
 ```
 
+#### Enviar e-mail para todos os clientes
+```bash
+curl -X POST "https://localhost:7014/api/email/send-all" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subject": "Newsletter Semanal",
+    "body": "<h2>Novidades da Semana</h2><p>Confira as principais novidades...</p>",
+    "isHtml": true
+  }'
+```
+
 ## 📊 Logs e Monitoramento
 
 O sistema inclui logging detalhado nos níveis:
@@ -222,14 +296,25 @@ O sistema inclui logging detalhado nos níveis:
 - **Information**: Operações bem-sucedidas
 - **Error**: Falhas e exceções
 
-Logs aparecem no console durante desenvolvimento e podem ser configurados para diferentes destinos em produção.
+### Exemplos de logs:
+```
+[2024-11-18 01:30:00] INFO: Received email send request to maria@empresa.com with subject "Bem-vinda!"
+[2024-11-18 01:30:01] INFO: Email sent successfully to maria@empresa.com
+[2024-11-18 01:30:05] INFO: Received email to all clients from database request with subject: "Newsletter Semanal"
+[2024-11-18 01:30:02] INFO: Cliente atualizado com sucesso: 67123abc456def789012345
+```
 
 ## 🚨 Tratamento de Erros
 
 - **Validação de modelos**: Retorna `400 Bad Request` para dados inválidos
 - **Erros de SMTP**: Tratamento específico para falhas de e-mail
 - **Logs estruturados**: Facilita debug e monitoramento
-- **Respostas consistentes**: Formato padronizado de resposta
+
+### Códigos de resposta HTTP:
+- **200 OK**: Operação realizada com sucesso
+- **400 Bad Request**: Dados inválidos ou erro na operação
+- **404 Not Found**: Cliente não encontrado
+- **500 Internal Server Error**: Erro interno do servidor
 
 ## 🔧 Desenvolvimento
 
