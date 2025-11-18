@@ -1,6 +1,6 @@
 ﻿# 📧 EasyMail
 
-**EasyMail** é uma API .NET para gerenciamento de clientes e envio de e-mails, construída seguindo os princípios de **Clean Architecture** e **SOLID**. O projeto oferecerá funcionalidades completas para cadastro de clientes e envio de e-mails através de SMTP para todos os clientes da base de dados.
+**EasyMail** é uma API .NET para gerenciamento de clientes e envio de e-mails, construída seguindo os princípios de **Clean Architecture** e **SOLID**. O projeto oferece funcionalidades completas para cadastro de clientes e envio de e-mails através de SMTP para todos os clientes da base de dados.
 
 ## 🚀 Tecnologias Utilizadas
 
