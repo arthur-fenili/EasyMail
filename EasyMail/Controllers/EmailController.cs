@@ -17,7 +17,7 @@ namespace EasyMail.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpPost("send")]
         public async Task<IActionResult> SendEmailAsync([FromBody] SendEmailRequest request)
         {
             try
@@ -41,7 +41,7 @@ namespace EasyMail.Controllers
 
         }
 
-        [HttpPost]
+        [HttpPost("send-all")]
         public async Task<IActionResult> EmailAllClientsAsync([FromBody] EmailAllClientsRequest request)
         {
 
