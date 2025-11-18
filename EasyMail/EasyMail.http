@@ -1,10 +1,5 @@
 @EasyMail_HostAddress = http://localhost:5023
 
-GET {{EasyMail_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
-
 GET {{EasyMail_HostAddress}}/api/client
 Accept: application/json
 

@@ -42,6 +42,7 @@ namespace EasyMail.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("Received get all clients request.");
             var clients = await _clientService.GetAllClients();
             return Ok(clients);
         }
