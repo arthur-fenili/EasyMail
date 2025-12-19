@@ -1,10 +1,6 @@
-using Application.Services;
-using Application.Services.Interfaces;
-using Domain.Interfaces;
+using Application;
+using Infrastructure;
 using Infrastructure.Configuration;
-using Infrastructure.Data;
-using Infrastructure.Repositories;
-using Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,18 +16,9 @@ builder.Services.Configure<MongoDbSettings>(
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 
-// Infrastructure
-builder.Services.AddSingleton<MongoDbContext>();
-
-// Repositories
-builder.Services.AddScoped<IClientRepository, ClientRepository>();
-
-// Application Services
-builder.Services.AddScoped<IClientService, ClientService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-
-// External Services (Infra)
-builder.Services.AddScoped<IEmailProvider, SmtpEmailProvider>();
+// Add layers
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 

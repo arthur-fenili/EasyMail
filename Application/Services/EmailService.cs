@@ -1,4 +1,4 @@
-﻿using Application.DTOs.Requests;
+using Application.DTOs.Requests;
 using Application.DTOs.Responses;
 using Application.Services.Interfaces;
 using Domain.Entities;
@@ -44,27 +44,75 @@ public class EmailService(IEmailProvider emailProvider, IClientRepository client
 
     public async Task<EmailResponse> EmailAllClientsAsync(EmailAllClientsRequest request)
     {
-        var clients = await _clientRepository.GetClientsAsync();
-
-        if (clients != null)
+        try
         {
-            foreach (Client client in clients)
+            var clients = await _clientRepository.GetClientsAsync();
+            
+            if (!clients?.Any() ?? true)
             {
-                await _emailProvider.SendAsync(client.Email, request.Subject, request.Body, request.IsHtml);
+                return new EmailResponse
+                {
+                    Success = false,
+                    Message = "No active clients found in database.",
+                    SentAt = DateTime.UtcNow
+                };
+            }
+
+            var clientList = clients!.ToList();
+            var successCount = 0;
+            var failureCount = 0;
+            var errors = new List<string>();
+
+            _logger.LogInformation("Starting bulk email to {ClientCount} clients with subject: {Subject}", 
+                clientList.Count, request.Subject);
+
+            foreach (var client in clientList)
+            {
+                try
+                {
+                    await _emailProvider.SendAsync(client.Email, request.Subject, request.Body, request.IsHtml);
+                    successCount++;
+                    
+                    _logger.LogDebug("Email sent successfully to {ClientEmail}", client.Email);
+                }
+                catch (Exception ex)
+                {
+                    failureCount++;
+                    var errorMessage = $"Failed to send email to {client.Email}: {ex.Message}";
+                    errors.Add(errorMessage);
+                    
+                    _logger.LogWarning(ex, "Failed to send email to {ClientEmail}", client.Email);
+                }
+            }
+
+            var isSuccess = successCount > 0;
+            var message = failureCount == 0 
+                ? $"Email sent successfully to all {successCount} clients."
+                : $"Email sent to {successCount} clients. {failureCount} failures occurred.";
+
+            if (errors.Any())
+            {
+                _logger.LogWarning("Bulk email completed with {SuccessCount} successes and {FailureCount} failures", 
+                    successCount, failureCount);
             }
 
             return new EmailResponse
             {
-                Success = true,
-                Message = "Email sent successfully to all clients in database.",
+                Success = isSuccess,
+                Message = message,
                 SentAt = DateTime.UtcNow
             };
         }
-
-        return new EmailResponse
+        catch (Exception ex)
         {
-            Success = false,
-            Message = "No clients found in database.",
-        };
+            _logger.LogError(ex, "Error occurred while processing bulk email request");
+            
+            return new EmailResponse
+            {
+                Success = false,
+                Message = $"Failed to process bulk email request: {ex.Message}",
+                SentAt = DateTime.UtcNow
+            };
+        }
     }
 }
